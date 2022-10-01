@@ -63,7 +63,6 @@ void moveCycles(int dir,int cycles){
 
 int main(void){
     wiringPiSetup();
-    //wiringPiSetupGpio();
     /* set the pin mode*/
     pinMode(IN1, OUTPUT);
     pinMode(IN2, OUTPUT);
