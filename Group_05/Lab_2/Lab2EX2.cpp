@@ -39,7 +39,7 @@ int time_inter_ms = 23; // time interval, you can use different time interval
 
 float kp= 12.8; 
 float kd= 5500;
-float ki= .1;
+float ki= .001;
 
 //float kp= 5; 
 //float kd= 30;
