@@ -14,7 +14,7 @@ int kobuki;
 int main(){
 	wiringPiSetup();
 	
-	kobuki = serialOpen("/dev/kobuki", 115200); 
+	kobuki = serialOpen("/dev/kobuki", 115200); //why "/dev/kobuki"
 
 	//The Kobuki accepts data packets at a rate of 20 ms.
 	//To continually move, data needs to be sent continuously. Therefore, 
