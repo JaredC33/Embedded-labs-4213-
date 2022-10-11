@@ -11,10 +11,42 @@ using namespace std::chrono;
 void movement(int, int);
 int kobuki;
 
+void test() {
+	int r, sp, trans_sp;
+/*Rotate the Kobuki 90 degrees*/
+	for(int i=0; i<12; i++){
+		sp = -100;
+		r=1; 
+		movement(sp, r);
+		delay(200);
+	}
+	delay(4000);
+		
+	/*Move along the vertical side*/
+	for(int j=0; j<150; j++){
+		sp=-100;
+		r=0; 
+		movement(sp, r);
+		delay(200);
+
+	} 
+	delay(4000);
+
+	/*Move along quarter circle*/
+	for(int i=0; i<10; i++){
+		r=500;
+		sp=100;
+		trans_sp=(sp*(r+0.5*230))/r;
+		movement(trans_sp, 500);
+
+		delay(200);
+	}
+
+}
 int main(){
 	wiringPiSetup();
 	
-	kobuki = serialOpen("/dev/kobuki", 115200); //why "/dev/kobuki"
+	kobuki = serialOpen("/dev/kobuki", 115200); 
 
 	//The Kobuki accepts data packets at a rate of 20 ms.
 	//To continually move, data needs to be sent continuously. Therefore, 
@@ -23,29 +55,41 @@ int main(){
 	
 	//Due to machine error, the calculated value of the time needed
 	//will not be exact, but can give you a rough starting value.
-
+		
+	test();
 
 	/*Rotate the Kobuki 90 degrees*/
-		
+	for(int i=0; i<12; i++){
+		int sp = -100;
+		int r=100; 
+		movement(sp, r);
+		delay(200);
+	}
+	delay(4000);
 		
 	/*Move along the vertical side*/
-	//move 50cm forward
+	for(int j=0; j<200; j++){
 
-	double speed=10; //unit of mm/sec
-	
-	duration<double> time_max= duration<double>(500/speed);	//time_max=distance(mm)/speed(mm/sec)
-	high_resolution_clock::time_point start_time= high_resolution_clock::now();
-	high_resolution_clock::time_point curr_time = high_resolution_clock::now();
-	
-	duration<double> time_span= duration_cast<duration<double>>(curr_time-start_time);
-	
-	while (time_span<time_max) {
-		movement((int)speed, 0);
-		curr_time = high_resolution_clock::now();
-		time_span= duration_cast<duration<double>>(curr_time-start_time);
-	}
+		int sp=-100;
+		int r=-0; 
+		 movement(sp, r);
+
+	} 
+	delay(4000);
 
 	/*Move along quarter circle*/
+	for(int i=0; i<10; i++){
+		for(int i=0; i<2; i++){
+		//turn
+		 movement(-100, 100);
+		delay(100);
+		}
+		for(int i=0; i<9; i++){
+		//forward
+		movement(-100, 0);
+		delay(100);
+		}
+	}
 
 
 
@@ -61,7 +105,7 @@ void movement(int sp, int r){
 	//Create the byte stream packet with the following format:
 	unsigned char b_0 = 0xAA; /*Byte 0: Kobuki Header 0*/
 	unsigned char b_1 = 0x55; /*Byte 1: Kobuki Header 1*/
-	unsigned char b_2 = 0x04; /*Byte 2: Length of Payload*/
+	unsigned char b_2 = 0x06; /*Byte 2: Length of Payload*/
 	unsigned char b_3 = 0x01; /*Byte 3: Sub-Payload Header*/
 	unsigned char b_4 = 0x04; /*Byte 4: Length of Sub-Payload*/
 
@@ -75,14 +119,14 @@ void movement(int sp, int r){
 	char packet[] = {b_0,b_1,b_2,b_3,b_4,b_5,b_6,b_7,b_8};
 	for (unsigned int i = 2; i < 9; i++)
 		checksum ^= packet[i];
-
+		cout<<"checksum: "<<checksum<<endl;
 	/*Send the data (Byte 1 - Byte 9) to Kobuki using serialPutchar (kobuki, );*/
 	
-	char send[]={b_0,b_1,b_2,b_3,b_4,b_5,b_6,b_7,b_8, checksum};
-	cout<<send<<endl;
+	char send[]={b_0,b_1,b_2,b_3,b_4,b_5,b_6,b_7,b_8,};
+	cout<<send<<endl;//////why is this ?
 	for (unsigned int i = 0; i < 9; i++)
 		serialPutchar(kobuki, send[i]);
-	cout<<"sent data"<<endl;
+	//cout<<"sent data"<<endl;
 
 	/*Pause the script so the data send rate is the
 	same as the Kobuki data receive rate*/
