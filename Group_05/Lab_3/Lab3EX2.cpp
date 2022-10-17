@@ -11,7 +11,7 @@ using namespace std;
 void movement(int, int);
 int kobuki;
 
-int main(){
+int main() {
 
 	wiringPiSetup();
 	kobuki = serialOpen("/dev/kobuki", 115200);
@@ -48,52 +48,72 @@ int main(){
 			{
 				printf("isButton: %u | Value: %d\n", event.number, event.value);
 				/*Interpret the joystick input and use that input to move the Kobuki*/
+				
 				if ((event.number==7)&&(event.value==1)) {
 					//START button is pressed
 					movement(0,0); //stop robot
 				}
-				if ((event.number==8)&&(event.value)) {
-					//Logitech button is pressed
-					//closes connection cleanly
+				
+				//Logitech button is pressed
+				//exit the script and close the Kobuki's connection cleanly
+				else if ((event.number==8)&&(event.value)) {
+					movement(0, 0);
+					cout<<"Kobuki closing..."<<endl;
 					serialClose(kobuki);
+					break;
 				}
+				else movement(0,0);
 
 			}
 			if (event.isAxis())
 			{
 				printf("isAxis: %u | Value: %d\n", event.number, event.value);
 				/*Interpret the joystick input and use that input to move the Kobuki*/
+				//D-Pad Left/Right
 				if (event.number==6){
-					if (event.value>0) { //rotates clockwise
+					if (event.value > 100) { //rotates clockwise
 						for(int i=0; i<10; ++i) {
-							sp=50;
-							movement(sp, -1); //stop robot
-							delay(200);
+							sp=100;
+							movement(sp, -1);
+							
+						}
 					}
-					if (event.value<0) { //rotates clockwise
+					else if (event.value < -100) { //rotates clockwise
 						for(int i=0; i<10; ++i) {
-							sp=50;
-							movement(sp, 1); //stop robot
-							delay(200);
+							sp=100;
+							movement(sp, 1); 
+						}
 					}
-				}
-				if (((event.number==8)(event.value)) {
-					//Logitech button is pressed
-					//closes connection cleanly
-					cout<<"Kobuki closing..."<<endl;
-					serialClose(kobuki);
 				}
 
-				
+				// D-Pad Up/Down
+				if (event.number==7) {
+					if (event.value < -100) { // move forward
+						for(int i=0; i<10; ++i) {
+							sp= 100;
+							movement(sp, 0); 
+						}
+					}
+					else if (event.value > 100) { //move backwards
+						for(int i=0; i<10; ++i) {
+							sp= -100;
+							movement(sp, 0);
+						}
+					}
+					else movement(0, 0); //stop
+				}
+
 			}
 		}
+		delay(200);
 
 	}
-
+	cout<<"closing..."<<endl;
 	return 0;
 }
 
-void movement(int sp, int r){
+
+void movement(int sp, int r) {
 
 	//Create the byte stream packet with the following format:
 	unsigned char b_0 = 0xAA; /*Byte 0: Kobuki Header 0*/
@@ -113,13 +133,12 @@ void movement(int sp, int r){
 		checksum ^= packet[i];
 
 	/*Send the data (Byte 1 - Byte 9) to Kobuki using serialPutchar (kobuki, );*/
-	char send[]={b_0,b_1,b_2,b_3,b_4,b_5,b_6,b_7,b_8,};
-	cout<<send<<endl;//////why is this ?
+	char send[] ={b_0,b_1,b_2,b_3,b_4,b_5,b_6,b_7,b_8,};
+	
 	for (unsigned int i = 0; i < 9; i++)
 		serialPutchar(kobuki, send[i]);
 
 	/*Pause the script so the data send rate is the
 	same as the Kobuki data receive rate*/
 	usleep(20000);
-
-}
+} 
