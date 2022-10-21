@@ -21,8 +21,9 @@ void readData();
 int kobuki, new_socket;
 
 /*Create char buffer to store transmitted data*/
-char buffer[1024] = {0};
+char buffer[10] = {0};
 
+//SERVER SIDE
 int main(){
 	//Initialize filestream for the Kobuki
 	wiringPiSetup();
@@ -110,28 +111,49 @@ void readData(){
 	int valread;
 	
 	/*Read the incoming data stream from the controller*/
-	valread = read(new_socket, buffer, 1024);
+	valread = read(new_socket, buffer, 10);
 
-	
-	
 	/*Print the data to the terminal*/
-	printf("%s\n",buffer); 
+	printf("Printing buffer %s\n",buffer); 
 
-	
 
 	/*Use the received data to control the Kobuki*/
+	switch (buffer[0]) {
+		case 's': //START button is pressed
+					movement(0,0); //stop robot
+					break;
+		case 'q': //Logitech button is pressed
+					//exit the script and close the Kobuki's connection cleanly
+					movement(0, 0);
+					cout<<"Kobuki closing..."<<endl;
+					serialClose(kobuki);
+					close(new_socket);
+					exit(0);
 
-	
-	if(false) 
-	{
+					break;
+		case 'l': 	for(int i=0; i<10; ++i) 
+						movement(100, 1);
+					break;
+		case 'r': //rotates clockwise
+					for(int i=0; i<10; ++i) movement(100, -1);
+					break;
+		case 'u': 	for(int i=0; i<10; ++i) movement(100, 0);
+					break;
+		case 'd': 	for(int i=0; i<10; ++i) movement(-100, 0);
+					break;
+		default: 	cout<<"Invalid command."<<endl;
+	}
 	/*Closes out of all connections cleanly*/
-
 	//When you need to close out of all connections, please
 	//close both the Kobuki and TTP/IP data streams.
 	//Not doing so will result in the need to restart
 	//the raspberry pi and Kobuki
-		close(new_socket);
+	if(buffer[0]=='q') 
+	{
+		movement(0, 0);
+		cout<<"Kobuki closing 2..."<<endl;
 		serialClose(kobuki);
+		close(new_socket);
 		exit(0);
 	}
 
