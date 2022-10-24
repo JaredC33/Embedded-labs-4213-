@@ -21,6 +21,7 @@ void readData();
 int kobuki, new_socket;
 
 /*Create char buffer to store transmitted data*/
+//Min size: 1 (each message is of length 1 char). selected size: 10
 char buffer[10] = {0};
 
 //SERVER SIDE
@@ -116,31 +117,28 @@ void readData(){
 	/*Print the data to the terminal*/
 	printf("Printing buffer %s\n",buffer); 
 
-
 	/*Use the received data to control the Kobuki*/
 	switch (buffer[0]) {
 		case 's': //START button is pressed
-					movement(0,0); //stop robot
-					break;
-		case 'q': //Logitech button is pressed
-					//exit the script and close the Kobuki's connection cleanly
-					movement(0, 0);
-					cout<<"Kobuki closing..."<<endl;
-					serialClose(kobuki);
-					close(new_socket);
-					exit(0);
-
-					break;
+				movement(0,0); //stop robot
+				break;
+		case 'q': //Logitech button is pressed: exit the script and close the Kobuki's connection cleanly
+				cout<<"Kobuki closing..."<<endl;
+				movement(0, 0);
+				serialClose(kobuki);
+				close(new_socket);
+				exit(0);
+				break;
 		case 'l': 	for(int i=0; i<10; ++i) 
-						movement(100, 1);
-					break;
+					movement(100, 1);
+				break;
 		case 'r': //rotates clockwise
-					for(int i=0; i<10; ++i) movement(100, -1);
-					break;
+				for(int i=0; i<10; ++i) movement(100, -1);
+				break;
 		case 'u': 	for(int i=0; i<10; ++i) movement(100, 0);
-					break;
+				break;
 		case 'd': 	for(int i=0; i<10; ++i) movement(-100, 0);
-					break;
+				break;
 		default: 	cout<<"Invalid command."<<endl;
 	}
 	/*Closes out of all connections cleanly*/
@@ -156,8 +154,6 @@ void readData(){
 		close(new_socket);
 		exit(0);
 	}
-
-
 
 
 	/*Reset the buffer*/
