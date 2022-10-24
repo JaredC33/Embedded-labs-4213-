@@ -43,13 +43,13 @@ int main(int argc, char const *argv[]){
 
 		/*Sample the events from the joystick*/
 		if (!joystick.sample(&event)) continue;
-
+		
+		/*Interpret the joystick input and use that input to move the Kobuki*/
 		if (event.isButton() && event.value) {
 			printf("isButton: %u | Value: %d\n", event.number, event.value);
-			/*Interpret the joystick input and use that input to move the Kobuki*/
 			
 			//START button
-			if ((event.number==7)&&(event.value==1)) send_string ='s';
+			if ((event.number==7)&&(event.value)) send_string ='s';
 			
 			//Logitech button is pressed
 			//exit the script and close the Kobuki's connection cleanly
@@ -73,7 +73,6 @@ int main(int argc, char const *argv[]){
 			}
 		}
 
-	
 		/*Print the data stream to the terminal*/
 		cout<< "Send String: "<<send_string<<endl;
 		/*Send the data to the server*/
@@ -98,7 +97,6 @@ int main(int argc, char const *argv[]){
 
 //Creates the connection between the client and
 //the server with the controller being the client
-
 int createSocket() {
 	struct sockaddr_in address;
 	struct sockaddr_in serv_addr;
