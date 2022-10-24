@@ -44,19 +44,18 @@ int main() {
 		if (joystick.sample(&event))
 		{
 			int sp;
-			if (event.isButton())
+			if (event.isButton() && event.value)
 			{
 				printf("isButton: %u | Value: %d\n", event.number, event.value);
 				/*Interpret the joystick input and use that input to move the Kobuki*/
 				
-				if ((event.number==7)&&(event.value==1)) {
-					//START button is pressed
+				//START button is pressed
+				if (event.number==7) {
 					movement(0,0); //stop robot
 				}
 				
-				//Logitech button is pressed
-				//exit the script and close the Kobuki's connection cleanly
-				else if ((event.number==8)&&(event.value)) {
+				//Logitech button is pressed: exit the script and close the Kobuki's connection cleanly
+				else if (event.number==8) {
 					movement(0, 0);
 					cout<<"Kobuki closing..."<<endl;
 					serialClose(kobuki);
@@ -68,17 +67,18 @@ int main() {
 			if (event.isAxis())
 			{
 				printf("isAxis: %u | Value: %d\n", event.number, event.value);
-				/*Interpret the joystick input and use that input to move the Kobuki*/
-				//D-Pad Left/Right
+				
+				//D-Pad Left-Right is pressed
 				if (event.number==6){
-					if (event.value > 100) { //rotates clockwise
+					//Right- rotates clockwise
+					if (event.value > 100) { 
 						for(int i=0; i<10; ++i) {
 							sp=100;
 							movement(sp, -1);
-							
 						}
 					}
-					else if (event.value < -100) { //rotates clockwise
+					//Left- rotates counterclockwise
+					else if (event.value < -100) { 
 						for(int i=0; i<10; ++i) {
 							sp=100;
 							movement(sp, 1); 
@@ -86,15 +86,17 @@ int main() {
 					}
 				}
 
-				// D-Pad Up/Down
+				// D-Pad Up/Down is pressed
 				if (event.number==7) {
-					if (event.value < -100) { // move forward
+					//Up- move forward
+					if (event.value < -100) { 
 						for(int i=0; i<10; ++i) {
 							sp= 100;
 							movement(sp, 0); 
 						}
 					}
-					else if (event.value > 100) { //move backwards
+					//Down- move backwards
+					else if (event.value > 100) { 
 						for(int i=0; i<10; ++i) {
 							sp= -100;
 							movement(sp, 0);
