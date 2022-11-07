@@ -43,7 +43,6 @@ int main(){
 
 	//stop
 	for(int i=0; i<10; ++i)	movement(0,0);
-
 	
 	//move forward
 	cout<<"\t\t\t\t\t\t\t forward"<<endl;

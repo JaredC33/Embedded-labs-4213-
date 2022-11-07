@@ -48,6 +48,7 @@ int main(){
 		}
 
 		string bumper_s, wdrop_s, cliff_s;
+		//if right bumper hit, turn left 90 degrees
 		if (bumper == 1)  {
 			flag = true;
 			bumper_s = "right bumper";
@@ -57,6 +58,7 @@ int main(){
 			for(int i=0; i<10; ++i)	movement(0,0);
 		}
 
+		//if center bumper hit, reverse and turn 180 degrees
 		else if (bumper == 2) {
 			flag = true;
 
@@ -67,6 +69,7 @@ int main(){
 			for(int i=0; i<10; ++i)	movement(0,0);
 
 		}
+		//if left bumper hit, turn right 90 degrees
 		else if (bumper == 4) {
 			flag = true;
 			bumper_s = "left bumper";
@@ -78,6 +81,7 @@ int main(){
 			for(int i=0; i<10; ++i)	movement(0,0);
 		}
 		
+		//right wheel dropped
 		if (drop == 1) {
 			flag = true;
 			wdrop_s = "right wheel";
@@ -86,6 +90,7 @@ int main(){
 			for(int i=0; i<125; ++i) movement(100, 1);
 			for(int i=0; i<10; ++i)	movement(0,0);
 		}
+		//left wheel dropped
 		if (drop == 2) {
 			flag = true;
 			wdrop_s = "left wheel";
@@ -96,6 +101,7 @@ int main(){
 			for(int i=0; i<10; ++i)	movement(0,0);
 		}
 
+		
 		switch (cliff) {
 		case 1: {
 			flag = true;
@@ -126,6 +132,7 @@ int main(){
 			break;
 			}
 		}
+		//if no flag (sensor) is raised, advance forward.
 		if (!flag) {
 			movement(100, 0);
 		}
