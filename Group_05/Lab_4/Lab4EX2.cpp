@@ -1,4 +1,4 @@
-//use g++ -std=c++11 -o Lab4EX2 Lab4EX2.cpp -lwiringPi
+//use g++ -std=c++11 -o Lab4EX2A Lab4EX2A.cpp -lwiringPi
 
 
 #include <iostream>
@@ -11,8 +11,7 @@
 #include <chrono>
 using namespace std;
 using namespace std::chrono;
-
-#define SONAR_PIN 1
+#define SONAR_PIN 1 //fill for GPIO 18
 #define TIN_MAX_US 18500 //check this units of usec
 #define SPEED_SOUND 340 // units of meters/sec
 
@@ -23,56 +22,62 @@ void movement(int, int);
 int main(){
 	wiringPiSetup();
 	kobuki = serialOpen("/dev/kobuki", 115200);
-
+	
 	/*Move from a random point within the area designated "X" to the
 	point B as shown on the diagram. Use a sonar sensor to navigate through the channel.
 	You can reuse your code from Lab 2 and 3*/
-	float distance, min_forward = 25.0f, min_turn = 100.0f;
-	int speed = 80;
-
-	//Advance forward
-	while ((distance = read_sonar()) > min_forward) {
-		movement(speed, 0);
-		cout << distance<<endl;
+	int forward_sp = 200;
+	//move forward
+	cout<<"\t\t\t\t\t\t\t forward"<<endl;
+	float distance = 100;
+	while (distance > 25) {
+		movement(forward_sp, 0);
+		distance = read_sonar();
 	}
-	movement(0, 0);
+	//stop
+	for(int i=0; i<10; ++i)	movement(0,0);
 
-	//Turn right
-	cout << "\t\t\t\t\tturning right"<<endl;
-	while (!((distance = read_sonar()) > 100) && (distance < 110)) {
-		movement(speed, -1);
-		cout << distance<<endl;
+	//turn right
+	cout<<"\t\t\t\t\t\t\t right"<<endl;
+	for(int i=0; i<125; ++i) movement(100, -1);
+
+	//stop
+	for(int i=0; i<10; ++i)	movement(0,0);
+
+	
+	//move forward
+	cout<<"\t\t\t\t\t\t\t forward"<<endl;
+	distance = 100;
+	while (distance > 25) {
+		movement(forward_sp, 0);
+		distance = read_sonar();
 	}
-	movement(0,0);
-	/*
-	for(int i=0; i<10; ++i) movement(100, -1);
-	movement(0, 0);
-*/
+	
+	//stop
+	for(int i=0; i<10; ++i)	movement(0,0);
 
-	//Advance forward
-	cout << "\t\t\t\t\tadvancing.."<<endl;
-	while ((distance = read_sonar()) > min_forward) 
-		movement(speed, 0);
-	
-	movement(0,0);
-	
 	//turn left
-	cout << "turning left"<<endl;
-	for(int i=0; i<10; ++i) movement(100, 1);
-	//delay(3000);
-	movement(0,0);
+	cout<<"\t\t\t\t\t\t\t left"<<endl;
+	for(int i=0; i<125; ++i) movement(100, 1);
+	for(int i=0; i<10; ++i)	movement(0,0);
 
-	//Advance forward
+	//move forward
+	cout<<"\t\t\t\t\t\t\t forward"<<endl;
+	distance = read_sonar();
+	while (distance>15) {
+		movement(forward_sp, 0);
+		distance = read_sonar();
+	}
 	
-	cout << "\t\t\t\t\tadvancing.."<<endl;
-	while ((distance = read_sonar()) > min_forward) 
-		movement(speed, 0);
+	//stop
+	for(int i=0; i<10; ++i)	movement(0,0);
 
 	/*Note: the Kobuki must completely pass point B as shown to receive full credit*/
-
+	serialClose(kobuki);
+	cout<<"kobuki closing"<<endl;
+	return 0;
 
 }
-
 
 float read_sonar(){
 	// you can reuse your code from Lab 2
@@ -117,11 +122,9 @@ float read_sonar(){
 	usleep(2000);
 	return distance_cm;
 }
+	
 
-
-
-
-void movement(int sp, int r){
+void movement(int sp, int r) {
 
 	//Create the byte stream packet with the following format:
 	unsigned char b_0 = 0xAA; /*Byte 0: Kobuki Header 0*/
@@ -149,4 +152,5 @@ void movement(int sp, int r){
 	/*Pause the script so the data send rate is the
 	same as the Kobuki data receive rate*/
 	usleep(20000);
-}
+} 
+	
